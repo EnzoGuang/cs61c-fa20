@@ -32,13 +32,10 @@ Image *readData(char *filename)
 		exit(1);
 	}
 	char buf[20];
-	// int col = 0;
-	// int row = 0;
 	u_int32_t *col = (u_int32_t*) malloc(sizeof(u_int32_t));
 	u_int32_t *row = (u_int32_t*) malloc(sizeof(u_int32_t));
 	unsigned int range = 0;
 	fscanf(fp, "%s %d %d %d", buf, col, row, &range);
-	//printf("It is in the file imageloader.c\n row: %d, col: %d\n", *row, *col);
 	Image *image_array = (Image *) malloc(sizeof(Image));
 	if (image_array == NULL) {
 		printf("Memory allocation for image_array failed.");
@@ -58,9 +55,7 @@ Image *readData(char *filename)
 	}
 	image_array->image = color_array;
 	image_array->rows = *row;
-	//printf("current image_array->rows: %d\n", image_array->rows);
 	image_array->cols = *col;
-	//printf("current image_array->cols: %d\n", image_array->cols);
 	fclose(fp);
 	return image_array;
 }
@@ -94,4 +89,8 @@ void writeData(Image *image)
 void freeImage(Image *image)
 {
 	//YOUR CODE HERE
+	free(image->cols);
+	free(image->rows);
+	free(image->image);
+	free(image);
 }
