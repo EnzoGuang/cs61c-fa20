@@ -29,33 +29,33 @@ Image *readData(char *filename)
 	FILE *fp = fopen(filename, "r");
 	if (fp == NULL) {
 		printf("Could not open %s\n", filename);
-		exit(1);
+		exit(-1);
 	}
 	char buf[20];
-	u_int32_t *col = (u_int32_t*) malloc(sizeof(u_int32_t));
-	u_int32_t *row = (u_int32_t*) malloc(sizeof(u_int32_t));
+	unsigned int col;
+	unsigned int row;
 	unsigned int range = 0;
-	fscanf(fp, "%s %d %d %d", buf, col, row, &range);
+	fscanf(fp, "%s %d %d %d", buf, &col, &row, &range);
 	Image *image_array = (Image *) malloc(sizeof(Image));
 	if (image_array == NULL) {
 		printf("Memory allocation for image_array failed.");
-		exit(1);
+		exit(-1);
 	}
-	Color *color_array = (Color *) malloc((*row) * (*col) * sizeof (Color));
-	for (int i = 0; i < (*row); i++) {
-		for (int j = 0; j < (*col); j++) {
-			int index = i * (*col) + j;
+	image_array->image = (Color *) malloc(row * sizeof(Color*));
+	for (int i = 0; i < row; i++) {
+		image_array->image[i] = (Color *) malloc(col * sizeof(Color*));
+	}
+	for (int i = 0; i < row; i++) {
+		for (int j = 0; j < col; j++) {
 			fscanf(fp, "%u %u %u", 
-				&color_array[index].R, 
-				&color_array[index].G,
-				&color_array[index].B
+				&(image_array->image[i][j].R),
+				&(image_array->image[i][j].G),
+				&(image_array->image[i][j].B)
 			);
-			//printf("index[%d], R: %u, G: %u, B: %u\n", index, color_array[index].R, color_array[index].G, color_array[index].B);
 		}
 	}
-	image_array->image = color_array;
-	image_array->rows = *row;
-	image_array->cols = *col;
+	image_array->rows = row;
+	image_array->cols = col;
 	fclose(fp);
 	return image_array;
 }
@@ -65,23 +65,19 @@ void writeData(Image *image)
 {
 	//YOUR CODE HERE
 	printf("P3\n");
-	printf("%u %u\n", (unsigned int)image->cols, (unsigned int)image->rows);
+	printf("%u %u\n", image->cols, image->rows);
 	int row = image->rows;
 	int col = image->cols;
-	printf("255");
-	int index;
-	Color *color = image->image;
+	printf("255\n");
 	for (int i = 0; i < row; i++) {
 		for (int j = 0; j < col; j++) {
-			index = i * col + j;
-			if (index % col == 0) {
-				printf("\n");
-			}
-			if (index % col != 0) {
+			Color temp = image->image[i][j];
+			if (j != 0) {
 				printf("   ");
 			}
-			printf("%3d %3d %3d", color[index].R, color[index].G, color[index].B);
+			printf("%3d %3d %3d", temp.R, temp.G, temp.B); 
 		}
+		printf("\n");
 	}
 }
 
@@ -89,8 +85,9 @@ void writeData(Image *image)
 void freeImage(Image *image)
 {
 	//YOUR CODE HERE
-	free(image->cols);
-	free(image->rows);
+	for (int i = 0; i < (image->rows); i++) {
+		free(image->image[i]);
+	}
 	free(image->image);
 	free(image);
 }
