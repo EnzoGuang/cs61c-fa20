@@ -57,14 +57,6 @@ Image *steganography(Image *image)
 			free(temp);
 		}
 	}
-	// Color *color_array = (Color *) malloc(row * col * sizeof(Color));
-	// for (int i = 0; i < row; i++) {
-	// 	for (int j = 0; j < col; j++) {
-	// 		Color *temp = evaluateOnePixel(image, i, j);
-	// 		color_array[i * col + col] = *temp;
-	// 		free(temp);
-	// 	}
-	// }
 	new_image->cols = image->cols;
 	new_image->rows = image->rows;
 	return new_image;
@@ -88,7 +80,7 @@ int main(int argc, char **argv)
 	//YOUR CODE HERE
 	if (argc != 2) {
 		printf("usage: %s filename\n", argv[0]);
-		exit(-1);
+		exit(-1) ;
 	}
 	char *filename = argv[1];
 	Image *original_image = readData(filename);
