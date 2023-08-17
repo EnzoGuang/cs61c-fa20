@@ -77,7 +77,10 @@ main:
 # Think: why might having a1 be useful?
 f:
     # YOUR CODE GOES HERE!
-
+    addi t0, a0, 3 # index of the input array
+    slli t1, t0, 2 # offset of the array address
+    add t2, a1, t1 # the address of output[index]
+    lb a0, 0(t2)
     jr ra               # Always remember to jr ra after your function!
 
 print_int:
