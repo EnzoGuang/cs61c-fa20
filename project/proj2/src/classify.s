@@ -55,12 +55,10 @@ classify:
     # Load pretrained m0
     addi a0, x0, 8
     jal malloc
-    li t0, 0                # if malloc fail a0 will set to 0
-    beq a0, t0, exit_malloc_fail
+    beq a0, x0, exit_malloc_fail    # if malloc fail a0 will set to 0
     add s3, a0, x0          # s3 store the row and column of m0
     
-    lw t1, 4(s1)
-    add a0, t1, x0
+    lw a0, 4(s1)
     add a1, s3, x0
     addi a2, s3, 4
     jal read_matrix
@@ -69,12 +67,10 @@ classify:
     # Load pretrained m1
     addi a0, x0, 8
     jal malloc
-    li t0, 0
-    beq a0, t0, exit_malloc_fail
+    beq a0, x0, exit_malloc_fail
     add s5, a0, x0          # s5 store the row and column of m1
 
-    lw t1, 8(s1)
-    add a0, t1, x0
+    lw a0, 8(s1)
     add a1, s5, x0
     addi a2, s5, 4
     jal read_matrix
@@ -83,17 +79,14 @@ classify:
     # Load input matrix
     addi a0, x0, 8
     jal malloc
-    li t0, 0
-    beq a0, t0, exit_malloc_fail
+    beq a0, x0, exit_malloc_fail
     add s7, a0, x0          # s7 store the row and column of input_matrix
 
-    lw t1, 12(s1)
-    add a0, t1, x0
-    add a2, s7, x0
-    addi a3, s7, 4
+    lw a0, 12(s1)
+    add a1, s7, x0
+    addi a2, s7, 4
     jal read_matrix
     add s8, a0, x0          # s8 sotre the address of input_matrix in memory
-
 
     # =====================================
     # RUN LAYERS
@@ -122,11 +115,15 @@ classify:
 
     # 2. NONLINEAR LAYER: ReLU(m0 * input)
     add a0, s9, x0
-    lw a1, 0(s3)
+    lw t0, 0(s3)
+    lw t1, 4(s7)
+    mul a1, t0, t1
     jal relu
 
     # 3. LINEAR LAYER: m1 * ReLU(m0 * input)
-    lw a0, 0(s5)
+    lw t0, 0(s5)
+    lw t1, 4(s7)
+    mul a0 t0, t1
     slli a0, a0, 2
     jal malloc
     li t0, 0
@@ -138,7 +135,7 @@ classify:
     lw a2, 4(s5)
     add a3, s9, x0
     lw a4, 0(s3)
-    addi a5, x0, 1
+    lw a5, 4(s7)
     add a6, s10, x0
     jal matmul
 
@@ -150,7 +147,7 @@ classify:
     lw a0, 16(s1)
     add a1, s10, x0
     lw a2, 0(s5)
-    addi a3, x0, 1
+    lw a3, 4(s7)
     jal write_matrix
 
 
@@ -159,14 +156,15 @@ classify:
     # =====================================
     # Call argmax
     add a0, s10, x0
-    lw a1, 0(s5)
+    lw t0, 0(s5)
+    lw t1, 4(s7)
+    mul a1, t0, t1
     jal argmax
     add s11, a0, x0         # store the index of largest element   
 
 
     # Print classification
-    li t0, 0
-    bne t0, s2, finish
+    bne x0, s2, finish
 
     add a1, s11, x0
     jal print_int

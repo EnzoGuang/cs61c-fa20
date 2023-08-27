@@ -61,7 +61,7 @@ write_matrix:
     addi a4, x0, 4
     jal fwrite
     li t0, 2
-    blt a0, t0, exit_fwrite
+    bne a0, t0, exit_fwrite
 
     # write file
     add a1, s4, x0
@@ -70,7 +70,7 @@ write_matrix:
     addi a4, x0, 4
     jal fwrite
     mul t0, s2, s3
-    blt a0, t0, exit_fwrite
+    bne a0, t0, exit_fwrite
 
     # close file pointer
     add a1, s4, x0

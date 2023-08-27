@@ -53,5 +53,5 @@ loop_end:
     ret
 
 exception:
-    li a1, 78
+    li a1, 77
     j exit2

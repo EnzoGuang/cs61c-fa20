@@ -42,9 +42,9 @@ read_matrix:
     add s1, a1, x0
     add s2, a2, x0
 
-    # call fopen function, reading only
+    # call fopen function, reading and write
     add a1, s0, x0
-    addi a2, x0, 0
+    addi a2, x0, 3
     jal fopen
     add t0, a0, x0
     li t1, -1
@@ -75,6 +75,7 @@ read_matrix:
     add s5, t3, x0          # store the total bytes of file
     add a0, t3, x0
     jal malloc
+    beq a0, x0, exit_fail_malloc
     add s4, a0, x0          # store the address of array in s4
 
     # read the rest of file 
@@ -103,6 +104,10 @@ read_matrix:
     lw s7, 32(sp)
     addi sp, sp, 36
     ret
+
+exit_fail_malloc:
+    li a1, 88
+    jal exit2
 
 exit_fopen:
     li a1, 90
